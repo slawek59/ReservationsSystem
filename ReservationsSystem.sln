@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationsSystem.API", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationsSystem.Domain", "Gamestore.Domain\ReservationsSystem.Domain.csproj", "{A63076CD-A6A3-42F3-B54A-26ADB013265B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationsSystem.Application", "ReservationsSystem.Application\ReservationsSystem.Application.csproj", "{055DEEE6-B5C3-4580-9576-81D38B448F69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{055DEEE6-B5C3-4580-9576-81D38B448F69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{055DEEE6-B5C3-4580-9576-81D38B448F69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{055DEEE6-B5C3-4580-9576-81D38B448F69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{055DEEE6-B5C3-4580-9576-81D38B448F69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
