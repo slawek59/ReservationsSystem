@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.37301.10 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationsSystem", "ReservationsSystem\ReservationsSystem.csproj", "{97989E70-F75F-4ADF-8EA9-A6BE593C540B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationsSystem.API", "ReservationsSystem\ReservationsSystem.API.csproj", "{97989E70-F75F-4ADF-8EA9-A6BE593C540B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationsSystem.Domain", "Gamestore.Domain\ReservationsSystem.Domain.csproj", "{A63076CD-A6A3-42F3-B54A-26ADB013265B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{97989E70-F75F-4ADF-8EA9-A6BE593C540B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97989E70-F75F-4ADF-8EA9-A6BE593C540B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97989E70-F75F-4ADF-8EA9-A6BE593C540B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A63076CD-A6A3-42F3-B54A-26ADB013265B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
