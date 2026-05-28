@@ -1,4 +1,7 @@
 
+using ReservationsSystem.Application.Interfaces.Repositories;
+using ReservationsSystem.Application.Interfaces.Services;
+using ReservationsSystem.Application.Services;
 using ReservationsSystem.Infra;
 
 namespace ReservationsSystem
@@ -15,7 +18,8 @@ namespace ReservationsSystem
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton<InMemoryDataStore>();
+            builder.Services.AddScoped<IFacilitiesService, FacilitiesService>();
+            builder.Services.AddSingleton<IInMemoryDataStore, InMemoryDataStore>();
 
             var app = builder.Build();
 

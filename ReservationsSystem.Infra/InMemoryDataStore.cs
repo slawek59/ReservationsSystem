@@ -1,8 +1,9 @@
-﻿using ReservationsSystem.Domain.Entities;
+﻿using ReservationsSystem.Application.Interfaces.Repositories;
+using ReservationsSystem.Domain.Entities;
 
 namespace ReservationsSystem.Infra
 {
-	public class InMemoryDataStore
+	public class InMemoryDataStore : IInMemoryDataStore
 	{
 		public List<User> Users { get; set; } = new List<User>
 		{
