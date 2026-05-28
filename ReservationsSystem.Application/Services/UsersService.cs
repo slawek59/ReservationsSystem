@@ -23,6 +23,7 @@ namespace ReservationsSystem.Application.Services
 				LastName = createUserDto.LastName,
 				Email = createUserDto.Email,
 				Phone = createUserDto.Phone,
+				CreatedAt = DateTime.UtcNow,
 			};
 
 			_dataStore.Users.Add(newUser);

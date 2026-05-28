@@ -1,5 +1,6 @@
 ﻿using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Domain.Entities;
+using System.Resources;
 
 namespace ReservationsSystem.Infra
 {
@@ -49,6 +50,6 @@ namespace ReservationsSystem.Infra
 				CreatedAt = DateTime.Now
 			}
 		};
-		public List<Reservation> Reservations { get; set; } = null!;
+		public List<Reservation> Reservations { get; set; } = new List<Reservation>();
 	}
 }

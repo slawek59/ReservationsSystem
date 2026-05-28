@@ -3,6 +3,7 @@ using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Application.Services;
 using ReservationsSystem.Infra;
+using System.Text.Json.Serialization;
 
 namespace ReservationsSystem
 {
@@ -14,12 +15,19 @@ namespace ReservationsSystem
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                }
+                );
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IFacilitiesService, FacilitiesService>();
             builder.Services.AddScoped<IUsersService, UsersService>();
+            builder.Services.AddScoped<IReservationsService, ReservationsService>();
             builder.Services.AddSingleton<IInMemoryDataStore, InMemoryDataStore>();
 
             var app = builder.Build();

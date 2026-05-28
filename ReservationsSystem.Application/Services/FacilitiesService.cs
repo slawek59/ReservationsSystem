@@ -25,6 +25,7 @@ namespace ReservationsSystem.Application.Services
 				Location = createFacilityDto.Location,
 				Capacity = createFacilityDto.Capacity,
 				IsActive = createFacilityDto.IsActive,
+				CreatedAt = DateTime.UtcNow,
 			}
 			;
 
