@@ -32,7 +32,7 @@ namespace ReservationsSystem.API.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<FacilityDto>> GetFacilityById(int id)
+		public async Task<ActionResult<FacilityDto>> GetFacilityById(Guid id)
 		{
 			var facility = await _facilitiesService.GetFacilityByIdAsync(id);
 

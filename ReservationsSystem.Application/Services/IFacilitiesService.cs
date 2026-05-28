@@ -7,6 +7,6 @@ namespace ReservationsSystem.API.Controllers
 	{
 		public Task<FacilityDto> CreateAsync(CreateFacilityDto createFacilityDto);
 		public Task<List<FacilityDto>> GetAllFacilitiesAsync();
-		public Task<FacilityDto> GetFacilityByIdAsync(int id);
+		public Task<FacilityDto> GetFacilityByIdAsync(Guid id);
 	}
 }
