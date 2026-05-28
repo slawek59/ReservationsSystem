@@ -1,7 +1,6 @@
-﻿
-using ReservationsSystem.Application.DTOs;
+﻿using ReservationsSystem.Application.DTOs;
 
-namespace ReservationsSystem.API.Controllers
+namespace ReservationsSystem.Application.Interfaces.Services
 {
 	public interface IFacilitiesService
 	{

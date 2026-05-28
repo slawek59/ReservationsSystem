@@ -1,7 +1,6 @@
-﻿
-using ReservationsSystem.Application.DTOs;
+﻿using ReservationsSystem.Application.DTOs;
 
-namespace ReservationsSystem.Application.Services
+namespace ReservationsSystem.Application.Interfaces.Services
 {
 	public interface IUsersService
 	{
