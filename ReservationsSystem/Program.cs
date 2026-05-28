@@ -19,6 +19,7 @@ namespace ReservationsSystem
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IFacilitiesService, FacilitiesService>();
+            builder.Services.AddScoped<IUsersService, UsersService>();
             builder.Services.AddSingleton<IInMemoryDataStore, InMemoryDataStore>();
 
             var app = builder.Build();
