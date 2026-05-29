@@ -1,4 +1,5 @@
 
+using Microsoft.OpenApi.Models;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Application.Services;
@@ -24,7 +25,15 @@ namespace ReservationsSystem
                 );
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Reservations System API",
+                    Version = "v1",
+                    Description = "API for managing reservations for sports facilities."
+                });
+            });
             builder.Services.AddScoped<IFacilitiesService, FacilitiesService>();
             builder.Services.AddScoped<IUsersService, UsersService>();
             builder.Services.AddScoped<IReservationsService, ReservationsService>();
