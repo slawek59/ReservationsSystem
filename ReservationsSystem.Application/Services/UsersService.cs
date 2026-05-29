@@ -23,6 +23,7 @@ namespace ReservationsSystem.Application.Services
 				LastName = createUserDto.LastName,
 				Email = createUserDto.Email,
 				Phone = createUserDto.Phone,
+				IsActive = true,
 				CreatedAt = DateTime.UtcNow,
 			};
 
@@ -36,6 +37,13 @@ namespace ReservationsSystem.Application.Services
 			};
 		}
 
+		public async Task DeleteUserAsync(Guid id)
+		{
+			var userToDelete = _dataStore.Users.FirstOrDefault(u => u.Id == id);
+
+			userToDelete.IsActive = false;
+		}
+
 		public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
 		{
 			var users = _dataStore.Users;
@@ -46,6 +54,7 @@ namespace ReservationsSystem.Application.Services
 					Id = u.Id,
 					Email = u.Email,
 					Phone = u.Phone,
+					IsActive = u.IsActive,
 					Reservations = u.Reservations.Select(r => r.Id).ToList(),
 				}).ToList();
 		}
@@ -59,7 +68,25 @@ namespace ReservationsSystem.Application.Services
 				Id = user.Id,
 				Email = user.Email,
 				Phone = user.Phone,
+				IsActive = user.IsActive,
 				Reservations = user.Reservations.Select(r => r.Id).ToList(),
+			};
+		}
+
+		public async Task<UserDto> UpdateUserAsync(UserDto userDto)
+		{
+			var userToUpdate = _dataStore.Users.FirstOrDefault(u => u.Id == userDto.Id);
+
+			userToUpdate.Email = userDto.Email;
+			userToUpdate.Phone = userDto.Phone;
+
+			return new UserDto
+			{
+				Id = userToUpdate.Id,
+				Email = userToUpdate.Email,
+				Phone = userToUpdate.Phone,
+				IsActive = userToUpdate.IsActive,
+				Reservations = userToUpdate.Reservations.Select(r => r.Id).ToList()
 			};
 		}
 	}
