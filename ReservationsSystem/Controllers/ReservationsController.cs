@@ -58,7 +58,7 @@ namespace ReservationsSystem.API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<ActionResult<ReservationDto>> UpdateReservation(int id, [FromBody] ReservationDto reservationDto)
+		public async Task<ActionResult<ReservationDto>> UpdateReservation(Guid id, [FromBody] ReservationDto reservationDto)
 		{
 			var updatedReservation = _reservationsService.UpdateReservationAsync(reservationDto);
 
