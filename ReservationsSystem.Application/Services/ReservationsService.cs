@@ -30,6 +30,8 @@ namespace ReservationsSystem.Application.Services
 			};
 
 			_dataStore.Reservations.Add(newReservation);
+			_dataStore.Facilities.FirstOrDefault(f => f.Id == newReservation.FacilityId).Reservations.Add(newReservation);
+			_dataStore.Users.FirstOrDefault(u => u.Id == newReservation.UserId).Reservations.Add(newReservation);
 
 			return new ReservationDto
 			{
@@ -40,6 +42,14 @@ namespace ReservationsSystem.Application.Services
 				EndTime = newReservation.EndTime,
 				Status = newReservation.Status,
 			};
+		}
+
+		public async Task DeleteReservationAsync(Guid id)
+		{
+			var reservationToDelete = _dataStore.Reservations.FirstOrDefault(r => r.Id == id);
+
+			reservationToDelete.Status = ReservationStatus.Cancelled;
+
 		}
 
 		public async Task<IEnumerable<ReservationDto>> GetAllReservationsAsync()
@@ -70,6 +80,11 @@ namespace ReservationsSystem.Application.Services
 				EndTime = reservation.EndTime,
 				Status = reservation.Status,
 			};
+		}
+
+		public Task<ReservationDto> UpdateReservationAsync(ReservationDto reservationDto)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

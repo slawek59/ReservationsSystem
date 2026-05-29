@@ -55,7 +55,7 @@ namespace ReservationsSystem.Application.Services
 					Location = f.Location,
 					Capacity = f.Capacity,
 					IsActive = f.IsActive,
-					Reservations = f.Reservations,
+					Reservations = f.Reservations.Select(r => r.Id).ToList(),
 				}).ToList();
 		}
 
@@ -71,7 +71,7 @@ namespace ReservationsSystem.Application.Services
 				Location = facility.Location,
 				Capacity = facility.Capacity,
 				IsActive = facility.IsActive,
-				Reservations = facility.Reservations,
+				Reservations = facility.Reservations.Select(r => r.Id).ToList(),
 			};
 		}
 	}

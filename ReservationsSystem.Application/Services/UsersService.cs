@@ -45,7 +45,8 @@ namespace ReservationsSystem.Application.Services
 				{
 					Id = u.Id,
 					Email = u.Email,
-					Phone = u.Phone
+					Phone = u.Phone,
+					Reservations = u.Reservations.Select(r => r.Id).ToList(),
 				}).ToList();
 		}
 
@@ -57,7 +58,8 @@ namespace ReservationsSystem.Application.Services
 			{
 				Id = user.Id,
 				Email = user.Email,
-				Phone = user.Phone
+				Phone = user.Phone,
+				Reservations = user.Reservations.Select(r => r.Id).ToList(),
 			};
 		}
 	}
