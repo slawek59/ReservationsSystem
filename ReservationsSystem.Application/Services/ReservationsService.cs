@@ -82,9 +82,21 @@ namespace ReservationsSystem.Application.Services
 			};
 		}
 
-		public Task<ReservationDto> UpdateReservationAsync(ReservationDto reservationDto)
+		public async Task<ReservationDto> UpdateReservationAsync(ReservationDto reservationDto)
 		{
-			throw new NotImplementedException();
+			var reservationToUpdate = _dataStore.Reservations.FirstOrDefault(r => r.Id == reservationDto.Id);
+
+			reservationToUpdate.Status = reservationDto.Status;
+
+			return new ReservationDto
+			{
+				Id = reservationToUpdate.Id,
+				UserId = reservationToUpdate.UserId,
+				FacilityId = reservationToUpdate.FacilityId,
+				StartTime = reservationToUpdate.StartTime,
+				EndTime = reservationToUpdate.EndTime,
+				Status = reservationToUpdate.Status,
+			};
 		}
 	}
 }
