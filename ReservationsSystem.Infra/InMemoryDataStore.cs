@@ -15,6 +15,7 @@ namespace ReservationsSystem.Infra
 				LastName = "lastName1",
 				Email = "email1",
 				Phone = "phone1",
+				IsActive = true,
 				CreatedAt = DateTime.Now,
 			},
 			new User
@@ -24,6 +25,7 @@ namespace ReservationsSystem.Infra
 				LastName = "lastName2",
 				Email = "email2",
 				Phone = "phone2",
+				IsActive = true,
 				CreatedAt = DateTime.Now,
 			}
 		};

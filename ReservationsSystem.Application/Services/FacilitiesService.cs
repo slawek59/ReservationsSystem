@@ -2,7 +2,6 @@
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Domain.Entities;
-using System.Xml.Linq;
 
 namespace ReservationsSystem.Application.Services
 {
@@ -42,6 +41,13 @@ namespace ReservationsSystem.Application.Services
 			};
 		}
 
+		public async Task DeleteFacilityAsync(Guid id)
+		{
+			var facilityToDelete = _dataStore.Facilities.FirstOrDefault(f => f.Id == id);
+
+			facilityToDelete.IsActive = false;
+		}
+
 		public async Task<List<FacilityDto>> GetAllFacilitiesAsync()
 		{
 			var facilities = _dataStore.Facilities.ToList();
@@ -72,6 +78,27 @@ namespace ReservationsSystem.Application.Services
 				Capacity = facility.Capacity,
 				IsActive = facility.IsActive,
 				Reservations = facility.Reservations.Select(r => r.Id).ToList(),
+			};
+		}
+
+		public async Task<FacilityDto> UpdateFacilityAsync(FacilityDto facilityDto)
+		{
+			var facilityToUpdate = _dataStore.Facilities.FirstOrDefault(f => f.Id == facilityDto.Id);
+
+			facilityToUpdate.Name = facilityDto.Name;
+			facilityToUpdate.Type = facilityDto.Type;
+			facilityToUpdate.Location = facilityDto.Location;
+			facilityToUpdate.Capacity = facilityDto.Capacity;
+
+			return new FacilityDto
+			{
+				Id = facilityToUpdate.Id,
+				Name = facilityToUpdate.Name,
+				Type = facilityToUpdate.Type,
+				Location = facilityToUpdate.Location,
+				Capacity = facilityToUpdate.Capacity,
+				IsActive = facilityToUpdate.IsActive,
+				Reservations = facilityToUpdate.Reservations.Select(r => r.Id).ToList()
 			};
 		}
 	}

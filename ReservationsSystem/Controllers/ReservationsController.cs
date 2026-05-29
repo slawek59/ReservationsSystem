@@ -60,7 +60,7 @@ namespace ReservationsSystem.API.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<ReservationDto>> UpdateReservation(Guid id, [FromBody] ReservationDto reservationDto)
 		{
-			var updatedReservation = _reservationsService.UpdateReservationAsync(reservationDto);
+			var updatedReservation = await _reservationsService.UpdateReservationAsync(reservationDto);
 
 			return Ok(updatedReservation);
 		}
@@ -73,7 +73,7 @@ namespace ReservationsSystem.API.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> DeleteReservation(Guid id)
 		{
-			_reservationsService.DeleteReservationAsync(id);
+			await _reservationsService.DeleteReservationAsync(id);
 
 			return NoContent();
 		}

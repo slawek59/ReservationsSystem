@@ -62,7 +62,7 @@ namespace ReservationsSystem.API.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<UserDto>> UpdateUser(Guid id, [FromBody] UserDto userDto)
 		{
-			var updatedUser = _usersService.UpdateUserAsync(userDto);
+			var updatedUser = await _usersService.UpdateUserAsync(userDto);
 
 			return Ok(updatedUser);
 		}
@@ -74,7 +74,7 @@ namespace ReservationsSystem.API.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DeleteUser(Guid id)
 		{
-			_usersService.DeleteUserAsync(id);
+			await _usersService.DeleteUserAsync(id);
 
 			return NoContent();
 		}

@@ -54,14 +54,27 @@ namespace ReservationsSystem.API.Controllers
 
 		// PUT api/<FacilitiesController>/5
 		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<FacilityDto>> UpdateFacility(Guid id, [FromBody] FacilityDto facilityDto)
 		{
+			var updatedFacility = await _facilitiesService.UpdateFacilityAsync(facilityDto);
+
+			return Ok(updatedFacility);
 		}
 
 		// DELETE api/<FacilitiesController>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> Delete(Guid id)
 		{
+			await _facilitiesService.DeleteFacilityAsync(id);
+
+			return NoContent();
 		}
 	}
 }
