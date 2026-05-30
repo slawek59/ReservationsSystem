@@ -1,5 +1,6 @@
 
 using Microsoft.OpenApi.Models;
+using ReservationsSystem.API.Middleware;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Application.Services;
@@ -47,6 +48,8 @@ namespace ReservationsSystem
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseExceptionMiddleware();
 
             app.UseHttpsRedirection();
 
