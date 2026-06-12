@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservationsSystem.Application.DTOs;
 using ReservationsSystem.Application.Interfaces.Services;
-using ReservationsSystem.Application.Services;
-using System;
 
 namespace ReservationsSystem.API.Controllers
 {

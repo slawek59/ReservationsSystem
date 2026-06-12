@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Net;
+using System.Text.Json;
 
 namespace ReservationsSystem.API.Middleware
 {
@@ -18,24 +18,25 @@ namespace ReservationsSystem.API.Middleware
 			{
 				await _next(context);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				await HandleExceptionAsync(context, ex);
+				await HandleExceptionAsync(context);
 			}
 		}
 
-		private Task HandleExceptionAsync(HttpContext context, Exception ex)
+		private async Task HandleExceptionAsync(HttpContext context)
 		{
+			var statusCode = (int)HttpStatusCode.InternalServerError;
+				
 			var jsonResponse = JsonSerializer.Serialize(new
 			{
-				Status = 500,
+				Status = statusCode,
 				Message = "An unexpected error occurred.",
 			});
 			context.Response.ContentType = "application/json";
-			context.Response.StatusCode = 500;
+			context.Response.StatusCode = statusCode;
 
-			return context.Response.WriteAsync(jsonResponse);
+			await context.Response.WriteAsync(jsonResponse);
 		}
 	}
 }
-///TODO defaultowe wyjątki najpierw zobaczmy jak dzialają tutaj, potem napisze swoje

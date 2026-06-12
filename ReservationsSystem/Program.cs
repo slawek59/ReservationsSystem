@@ -1,9 +1,12 @@
 
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.OpenApi.Models;
 using ReservationsSystem.API.Middleware;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Application.Services;
+using ReservationsSystem.Application.Validators.User;
 using ReservationsSystem.Infra;
 using System.Text.Json.Serialization;
 
@@ -25,7 +28,9 @@ namespace ReservationsSystem
                 }
                 );
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDataValidator>();
+			builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo

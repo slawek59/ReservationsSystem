@@ -10,4 +10,13 @@
     <ProjectReference Include="..\ReservationsSystem.Domain\ReservationsSystem.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validators\Facility\" />
+    <Folder Include="Validators\Reservation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+  </ItemGroup>
+
 </Project>
