@@ -25,7 +25,7 @@ namespace ReservationsSystem.Application.Services
 				Facility = _dataStore.Facilities.FirstOrDefault(f => f.Id == createReservationDto.FacilityId),
 				StartTime = createReservationDto.StartTime,
 				EndTime = createReservationDto.EndTime,
-				Status = createReservationDto.Status,
+				Status = ReservationStatus.Pending,
 				CreatedAt = DateTime.Now,
 			};
 

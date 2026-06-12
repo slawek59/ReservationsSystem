@@ -8,6 +8,5 @@ namespace ReservationsSystem.Application.DTOs
 		public Guid FacilityId { get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
-		public ReservationStatus Status { get; set; }
 	}
 }
