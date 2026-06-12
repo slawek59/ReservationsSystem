@@ -8,7 +8,6 @@ namespace ReservationsSystem.Application.Validators.User
 		public UpdateUserDataValidator()
 		{
 			RuleFor(x => x.Id)
-				.Cascade(CascadeMode.Stop)
 				.NotEmpty()
 				.WithMessage("Id is required.");
 
