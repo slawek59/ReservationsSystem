@@ -7,31 +7,55 @@ namespace ReservationsSystem.Application.Services
 {
 	public class ReservationsService : IReservationsService
 	{
-		private readonly IInMemoryDataStore _dataStore;
+		private readonly IReservationRepository _reservationRepository;
+		private readonly IUserRepository _userRepository;
+		private readonly IFacilityRepository _facilityRepository;
 
-		public ReservationsService(IInMemoryDataStore dataStore)
+		public ReservationsService(IReservationRepository reservationRepository, IUserRepository userRepository, IFacilityRepository facilityRepository)
 		{
-			_dataStore = dataStore;
+			_reservationRepository = reservationRepository;
+			_userRepository = userRepository;
+			_facilityRepository = facilityRepository;
 		}
 
 		public async Task<ReservationDto> CreateAsync(CreateReservationDto createReservationDto)
 		{
+			//_logger.LogInformation("Creating new reservation.);
+
+			var user = await _userRepository.GetByIdAsync(createReservationDto.UserId);
+
+			if (user == null)
+			{
+				//_logger.LogWarning("No user found with ID: {UserId}", id);
+				//throw new NotFoundException($"No user found with ID: {id}");
+			}
+
+			var facility = await _facilityRepository.GetByIdAsync(createReservationDto.FacilityId);
+
+			if (facility == null)
+			{
+				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
+				//throw new NotFoundException($"No facility found with ID: {id}");
+			}
+
 			var newReservation = new Reservation
 			{
 				Id = Guid.NewGuid(),
 				UserId = createReservationDto.UserId,
-				User = _dataStore.Users.FirstOrDefault(u => u.Id == createReservationDto.UserId),
+				User = user,
 				FacilityId = createReservationDto.FacilityId,
-				Facility = _dataStore.Facilities.FirstOrDefault(f => f.Id == createReservationDto.FacilityId),
+				Facility = facility,
 				StartTime = createReservationDto.StartTime,
 				EndTime = createReservationDto.EndTime,
 				Status = ReservationStatus.Pending,
-				CreatedAt = DateTime.Now,
+				CreatedAt = DateTime.UtcNow,
 			};
 
-			_dataStore.Reservations.Add(newReservation);
-			_dataStore.Facilities.FirstOrDefault(f => f.Id == newReservation.FacilityId).Reservations.Add(newReservation);
-			_dataStore.Users.FirstOrDefault(u => u.Id == newReservation.UserId).Reservations.Add(newReservation);
+			await _reservationRepository.AddAsync(newReservation);
+
+			await _reservationRepository.SaveChangesAsync();
+
+			//_logger.LogInformation("Reservation created successfully. User ID: {UserId}", newReservation.UserId);
 
 			return new ReservationDto
 			{
@@ -46,21 +70,26 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task DeleteReservationAsync(Guid id)
 		{
-			var reservationToDelete = _dataStore.Reservations.FirstOrDefault(r => r.Id == id);
+			//_logger.LogInformation("Deleting reservation with ID: {ReservationId}", id);
+
+			var reservationToDelete = await GetExistingReservation(id);
 
 			reservationToDelete.Status = ReservationStatus.Cancelled;
+			await _reservationRepository.SaveChangesAsync();
 
 		}
 
 		public async Task<IEnumerable<ReservationDto>> GetAllReservationsAsync()
 		{
-			var reservations = _dataStore.Reservations.ToList();
+			//_logger.LogInformation("Retrieving all reservations.");
+
+			var reservations = await _reservationRepository.GetAllAsync();
 
 			return reservations.Select(r => new ReservationDto
 			{
 				Id = r.Id,
 				UserId = r.UserId,
-				FacilityId= r.FacilityId,
+				FacilityId = r.FacilityId,
 				StartTime = r.StartTime,
 				EndTime = r.EndTime,
 				Status = r.Status,
@@ -69,12 +98,14 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<ReservationDto> GetReservationByIdAsync(Guid id)
 		{
-			var reservation = _dataStore.Reservations.FirstOrDefault(r => r.Id == id);
+			//_logger.LogInformation("Retrieving reservation with ID: {ReservationId}", id);
+
+			var reservation = await GetExistingReservation(id);
 
 			return new ReservationDto
 			{
 				Id = reservation.Id,
-				UserId= reservation.UserId,
+				UserId = reservation.UserId,
 				FacilityId = reservation.FacilityId,
 				StartTime = reservation.StartTime,
 				EndTime = reservation.EndTime,
@@ -84,9 +115,14 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<ReservationDto> UpdateReservationAsync(ReservationDto reservationDto)
 		{
-			var reservationToUpdate = _dataStore.Reservations.FirstOrDefault(r => r.Id == reservationDto.Id);
+			//_logger.LogInformation("Updating reservation with ID: {ReservationId}", reservationDto.Id);
+
+			var reservationToUpdate = await GetExistingReservation(reservationDto.Id);
 
 			reservationToUpdate.Status = reservationDto.Status;
+
+			//_logger.LogInformation("Saving updated reservation.");
+			await _reservationRepository.SaveChangesAsync();
 
 			return new ReservationDto
 			{
@@ -97,6 +133,20 @@ namespace ReservationsSystem.Application.Services
 				EndTime = reservationToUpdate.EndTime,
 				Status = reservationToUpdate.Status,
 			};
+		}
+
+		private async Task<Reservation> GetExistingReservation(Guid id)
+		{
+			//_logger.LogInformation("Retrieving existing reservation with ID: {ReservationId}", id);
+
+			var reservation = await _reservationRepository.GetByIdAsync(id);
+
+			if (reservation == null)
+			{
+				//_logger.LogWarning("No reservation found with ID: {ReservationId}", id);
+				//throw new NotFoundException($"No reservation found with ID: {id}");
+			}
+			return reservation;
 		}
 	}
 }

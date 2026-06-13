@@ -7,15 +7,17 @@ namespace ReservationsSystem.Application.Services
 {
 	public class FacilitiesService : IFacilitiesService
 	{
-		private readonly IInMemoryDataStore _dataStore;
+		private readonly IFacilityRepository _facilityRepository;
 
-		public FacilitiesService(IInMemoryDataStore dataStore)
+		public FacilitiesService(IFacilityRepository facilityRepository)
 		{
-			_dataStore = dataStore;
+			_facilityRepository = facilityRepository;
 		}
 
 		public async Task<FacilityDto> CreateAsync(CreateFacilityDto createFacilityDto)
 		{
+			//_logger.LogInformation("Creating new facility with name: {FacilityName}", createFacilityDto.Name);
+
 			var newFacility = new Facility
 			{
 				Id = Guid.NewGuid(),
@@ -28,7 +30,9 @@ namespace ReservationsSystem.Application.Services
 			}
 			;
 
-			_dataStore.Facilities.Add(newFacility);
+			await _facilityRepository.AddAsync(newFacility);
+
+			//_logger.LogInformation("Facility created successfully. Facility ID: {FacilityId}", newFacility.Id);
 
 			return new FacilityDto
 			{
@@ -43,14 +47,19 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task DeleteFacilityAsync(Guid id)
 		{
-			var facilityToDelete = _dataStore.Facilities.FirstOrDefault(f => f.Id == id);
+			//_logger.LogInformation("Deleting facility with ID: {FacilityId}", id);
+
+			var facilityToDelete = await GetExistingFacility(id);
 
 			facilityToDelete.IsActive = false;
+			await _facilityRepository.SaveChangesAsync();
 		}
 
 		public async Task<List<FacilityDto>> GetAllFacilitiesAsync()
 		{
-			var facilities = _dataStore.Facilities.ToList();
+			//_logger.LogInformation("Retrieving all facilities.");
+
+			var facilities = await _facilityRepository.GetAllAsync();
 
 			return facilities.Select(
 				f => new FacilityDto
@@ -67,7 +76,9 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<FacilityDto> GetFacilityByIdAsync(Guid id)
 		{
-			var facility = _dataStore.Facilities.FirstOrDefault(f => f.Id == id);
+			//_logger.LogInformation("Retrieving facility with ID: {FacilityId}", id);
+
+			var facility = await GetExistingFacility(id);
 
 			return new FacilityDto
 			{
@@ -83,12 +94,17 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<FacilityDto> UpdateFacilityAsync(FacilityDto facilityDto)
 		{
-			var facilityToUpdate = _dataStore.Facilities.FirstOrDefault(f => f.Id == facilityDto.Id);
+			//_logger.LogInformation("Updating user with ID: {UserId}", userDto.Id);
+
+			var facilityToUpdate = await GetExistingFacility(facilityDto.Id);
 
 			facilityToUpdate.Name = facilityDto.Name;
 			facilityToUpdate.Type = facilityDto.Type;
 			facilityToUpdate.Location = facilityDto.Location;
 			facilityToUpdate.Capacity = facilityDto.Capacity;
+
+			//_logger.LogInformation("Saving updated facility.");
+			await _facilityRepository.SaveChangesAsync();
 
 			return new FacilityDto
 			{
@@ -100,6 +116,20 @@ namespace ReservationsSystem.Application.Services
 				IsActive = facilityToUpdate.IsActive,
 				Reservations = facilityToUpdate.Reservations.Select(r => r.Id).ToList()
 			};
+		}
+
+		private async Task<Facility> GetExistingFacility(Guid id)
+		{
+			//_logger.LogInformation("Retrieving existing facility with ID: {FacilityId}", id);
+
+			var facility = await _facilityRepository.GetByIdAsync(id);
+
+			if (facility == null)
+			{
+				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
+				//throw new NotFoundException($"No facility found with ID: {id}");
+			}
+			return facility;
 		}
 	}
 }

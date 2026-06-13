@@ -7,15 +7,17 @@ namespace ReservationsSystem.Application.Services
 {
 	public class UsersService : IUsersService
 	{
-		private readonly IInMemoryDataStore _dataStore;
+		private readonly IUserRepository _userRepository;
 
-		public UsersService(IInMemoryDataStore dataStore)
+		public UsersService(IUserRepository userRepository)
 		{
-			_dataStore = dataStore;
+			_userRepository = userRepository;
 		}
 
 		public async Task<UserDto> CreateAsync(CreateUserDto createUserDto)
 		{
+			//_logger.LogInformation("Creating new user with name: {UserName}", createUserDto.FirstName);
+
 			var newUser = new User
 			{
 				Id = Guid.NewGuid(),
@@ -27,7 +29,9 @@ namespace ReservationsSystem.Application.Services
 				CreatedAt = DateTime.UtcNow,
 			};
 
-			_dataStore.Users.Add(newUser);
+			await _userRepository.AddAsync(newUser);
+
+			//_logger.LogInformation("User created successfully. User ID: {UserId}", newUser.Id);
 
 			return new UserDto
 			{
@@ -39,16 +43,21 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task DeleteUserAsync(Guid id)
 		{
-			var userToDelete = _dataStore.Users.FirstOrDefault(u => u.Id == id);
+			//_logger.LogInformation("Deleting user with ID: {UserId}", id);
+
+			var userToDelete = await GetExistingUser(id);
 
 			userToDelete.IsActive = false;
+			await _userRepository.SaveChangesAsync();
 		}
 
 		public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
 		{
-			var users = _dataStore.Users;
+			//_logger.LogInformation("Retrieving all users.");
 
-			return users.Select(
+			var allUsers = await _userRepository.GetAllAsync();
+
+			return allUsers.Select(
 				u => new UserDto
 				{
 					Id = u.Id,
@@ -61,24 +70,31 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<UserDto> GetUserByIdAsync(Guid id)
 		{
-			var user = _dataStore.Users.FirstOrDefault(u => u.Id == id);
+			//_logger.LogInformation("Retrieving user with ID: {UserId}", id);
+
+			var userEntity = await GetExistingUser(id);
 
 			return new UserDto
 			{
-				Id = user.Id,
-				Email = user.Email,
-				Phone = user.Phone,
-				IsActive = user.IsActive,
-				Reservations = user.Reservations.Select(r => r.Id).ToList(),
+				Id = userEntity.Id,
+				Email = userEntity.Email,
+				Phone = userEntity.Phone,
+				IsActive = userEntity.IsActive,
+				Reservations = userEntity.Reservations.Select(r => r.Id).ToList(),
 			};
 		}
 
 		public async Task<UserDto> UpdateUserAsync(UserDto userDto)
 		{
-			var userToUpdate = _dataStore.Users.FirstOrDefault(u => u.Id == userDto.Id);
+			//_logger.LogInformation("Updating user with ID: {UserId}", userDto.Id);
+
+			var userToUpdate = await GetExistingUser(userDto.Id);
 
 			userToUpdate.Email = userDto.Email;
 			userToUpdate.Phone = userDto.Phone;
+
+			//_logger.LogInformation("Saving updated user.");
+			await _userRepository.SaveChangesAsync();
 
 			return new UserDto
 			{
@@ -88,6 +104,20 @@ namespace ReservationsSystem.Application.Services
 				IsActive = userToUpdate.IsActive,
 				Reservations = userToUpdate.Reservations.Select(r => r.Id).ToList()
 			};
+		}
+
+		private async Task<User> GetExistingUser(Guid id)
+		{
+			//_logger.LogInformation("Retrieving existing user with ID: {UserId}", id);
+
+			var user = await _userRepository.GetByIdAsync(id);
+			
+			if (user == null)
+			{
+				//_logger.LogWarning("No user found with ID: {UserId}", id);
+				//throw new NotFoundException($"No user found with ID: {id}");
+			}
+			return user;
 		}
 	}
 }
