@@ -8,10 +8,10 @@ using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Application.Services;
 using ReservationsSystem.Application.Validators.User;
-using ReservationsSystem.Infra;
 using ReservationsSystem.Infra.Files;
 using ReservationsSystem.Infra.Persistence;
 using ReservationsSystem.Infra.Repositories;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace ReservationsSystem
@@ -43,6 +43,11 @@ namespace ReservationsSystem
 					Version = "v1",
 					Description = "API for managing reservations for sports facilities."
 				});
+
+				var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				var xmlPath= Path.Combine(AppContext.BaseDirectory, xmlFilename);
+				
+				options.IncludeXmlComments(xmlPath);
 			});
 
 			builder.Services.AddDbContext<AppDbContext>(options =>
