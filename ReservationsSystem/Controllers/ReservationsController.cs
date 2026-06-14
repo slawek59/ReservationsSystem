@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservationsSystem.Application.DTOs;
 using ReservationsSystem.Application.Interfaces.Services;
+using ReservationsSystem.Infra.Files;
 
 namespace ReservationsSystem.API.Controllers
 {
@@ -9,10 +10,12 @@ namespace ReservationsSystem.API.Controllers
 	public class ReservationsController : ControllerBase
 	{
 		private readonly IReservationsService _reservationsService;
+		private readonly IFileService _fileService;
 
-		public ReservationsController(IReservationsService reservationsService)
+		public ReservationsController(IReservationsService reservationsService, IFileService fileService)
 		{
 			_reservationsService = reservationsService;
+			_fileService = fileService;
 		}
 
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,6 +79,16 @@ namespace ReservationsSystem.API.Controllers
 			await _reservationsService.DeleteReservationAsync(id);
 
 			return NoContent();
+		}
+
+		[HttpGet("export")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> ExportReservations()
+		{
+			var file = await _fileService.GetReservationFileAsync();
+
+			return File(file.Content, "text/csv", file.FileName);
 		}
 	}
 }

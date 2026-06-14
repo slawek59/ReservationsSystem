@@ -7,6 +7,7 @@ namespace ReservationsSystem.Application.Services
 {
 	public class ReservationsService : IReservationsService
 	{
+		private const int MaxReservationsPerUser = 5; // This can be moved to a configuration file or database if needed
 		private readonly IReservationRepository _reservationRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IFacilityRepository _facilityRepository;
@@ -36,6 +37,28 @@ namespace ReservationsSystem.Application.Services
 			{
 				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
 				//throw new NotFoundException($"No facility found with ID: {id}");
+			}
+
+			var userReservationsCount = await _reservationRepository.GetReservationsCountForUserAsync(createReservationDto.UserId);
+
+			if (userReservationsCount > MaxReservationsPerUser)
+			{
+				//_logger.LogWarning("User with ID: {UserId} has reached the maximum number of reservations.", createReservationDto.UserId);
+				//throw new ValidationException($"User has reached the maximum number of reservations.");
+			}
+
+			if (!user.IsActive || !facility.IsActive)
+			{
+				//_logger.LogWarning("User or facility is inactive. User ID: {UserId}, Facility ID: {FacilityId}", createReservationDto.UserId, createReservationDto.FacilityId);
+				//throw new ValidationException("User or facility is inactive.");
+			}
+
+			var areReservationsOverlapping = await _reservationRepository.HasOverlappingReservationAsync(createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
+
+			if (areReservationsOverlapping)
+			{
+				//_logger.LogWarning("Overlapping reservation found for facility ID: {FacilityId} between {StartTime} and {EndTime}", createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
+				//throw new ValidationException($"The facility is already reserved for the specified time range.");
 			}
 
 			var newReservation = new Reservation

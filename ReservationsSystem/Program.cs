@@ -9,6 +9,7 @@ using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Application.Services;
 using ReservationsSystem.Application.Validators.User;
 using ReservationsSystem.Infra;
+using ReservationsSystem.Infra.Files;
 using ReservationsSystem.Infra.Persistence;
 using ReservationsSystem.Infra.Repositories;
 using System.Text.Json.Serialization;
@@ -53,6 +54,8 @@ namespace ReservationsSystem
 			builder.Services.AddScoped<IUserRepository, UserRepository>();
 			builder.Services.AddScoped<IFacilityRepository, FacilityRepository>();
 			builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+			builder.Services.AddScoped<IFileService, FileService>();
+			builder.Services.AddScoped<ICsvGenerator, CsvGenerator>();
 
 			var app = builder.Build();
 

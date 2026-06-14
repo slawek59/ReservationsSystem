@@ -18,6 +18,14 @@ namespace ReservationsSystem.Infra.Repositories
 			await _context.Facilities.AddAsync(newFacility);
 		}
 
+		public async Task<bool> ExistsByNameAndLocationAsync(string name, string location)
+		{
+			return await _context.Facilities.AnyAsync(f =>
+				f.Name == name &&
+				f.Location == location
+			);
+		}
+
 		public async Task<IEnumerable<Facility>> GetAllAsync()
 		{
 			return await _context.Facilities

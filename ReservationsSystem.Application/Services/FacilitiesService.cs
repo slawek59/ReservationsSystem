@@ -18,6 +18,14 @@ namespace ReservationsSystem.Application.Services
 		{
 			//_logger.LogInformation("Creating new facility with name: {FacilityName}", createFacilityDto.Name);
 
+			var doesFacilityAlreadyExist = await _facilityRepository.ExistsByNameAndLocationAsync(createFacilityDto.Name, createFacilityDto.Location);
+
+			if (doesFacilityAlreadyExist)
+			{
+				//_logger.LogWarning();
+				//throw
+			}
+
 			var newFacility = new Facility
 			{
 				Id = Guid.NewGuid(),
@@ -100,7 +108,6 @@ namespace ReservationsSystem.Application.Services
 
 			facilityToUpdate.Name = facilityDto.Name;
 			facilityToUpdate.Type = facilityDto.Type;
-			facilityToUpdate.Location = facilityDto.Location;
 			facilityToUpdate.Capacity = facilityDto.Capacity;
 
 			//_logger.LogInformation("Saving updated facility.");
