@@ -24,7 +24,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var users = await _usersService.GetAllUsersAsync();
 
-			return Ok(users);
+			return Ok(new ResponseWrapper<IEnumerable<UserDto>>
+			{
+				Data = users,
+				Message = "Users retrieved successfully",
+				Success = true
+			});
 		}
 
 		// GET api/<UsersController>/5
@@ -37,7 +42,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var user = await _usersService.GetUserByIdAsync(id);
 
-			return Ok(user);
+			return Ok(new ResponseWrapper<UserDto>
+			{
+				Data = user,
+				Message = "User retrieved successfully",
+				Success = true
+			});
 		}
 
 		// POST api/<UsersController>
@@ -49,7 +59,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var createdUser = await _usersService.CreateAsync(createUserDto);
 
-			return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
+			return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, new ResponseWrapper<UserDto>
+			{
+				Data = createdUser,
+				Message = "User created successfully",
+				Success = true
+			});
 		}
 
 		// PUT api/<UsersController>/5
@@ -62,7 +77,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var updatedUser = await _usersService.UpdateUserAsync(userDto);
 
-			return Ok(updatedUser);
+			return Ok(new ResponseWrapper<UserDto>
+			{
+				Data = updatedUser,
+				Message = "User updated successfully",
+				Success = true
+			});
 		}
 
 		// DELETE api/<UsersController>/5

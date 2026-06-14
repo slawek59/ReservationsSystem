@@ -27,7 +27,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var reservations = await _reservationsService.GetAllReservationsAsync();
 
-			return Ok(reservations);
+			return Ok(new ResponseWrapper<IEnumerable<ReservationDto>>
+			{
+				Data = reservations,
+				Message = "Reservations retrieved successfully",
+				Success = true
+			});
 		}
 
 		// GET api/<UsersController>/5
@@ -40,7 +45,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var reservation = await _reservationsService.GetReservationByIdAsync(id);
 
-			return Ok(reservation);
+			return Ok(new ResponseWrapper<ReservationDto>
+			{
+				Data = reservation,
+				Message = "Reservation retrieved successfully",
+				Success = true
+			});
 		}
 
 		// POST api/<UsersController>
@@ -52,7 +62,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var createdReservation = await _reservationsService.CreateAsync(createReservationDto);
 
-			return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, createdReservation);
+			return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, new ResponseWrapper<ReservationDto>
+			{
+				Data = createdReservation,
+				Message = "Reservation created successfully",
+				Success = true
+			});
 		}
 
 		// PUT api/<UsersController>/5
@@ -65,7 +80,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var updatedReservation = await _reservationsService.UpdateReservationAsync(reservationDto);
 
-			return Ok(updatedReservation);
+			return Ok(new ResponseWrapper<ReservationDto>
+			{
+				Data = updatedReservation,
+				Message = "Reservation updated successfully",
+				Success = true
+			});
 		}
 
 		// DELETE api/<UsersController>/5

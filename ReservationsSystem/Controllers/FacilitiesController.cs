@@ -24,7 +24,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var allFacilities = await _facilitiesService.GetAllFacilitiesAsync();
 
-			return Ok(allFacilities);
+			return Ok(new ResponseWrapper<IEnumerable<FacilityDto>>
+			{
+				Data = allFacilities,
+				Message = "Facilities retrieved successfully",
+				Success = true
+			});
 		}
 
 		// GET api/<FacilitiesController>/5
@@ -37,7 +42,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var facility = await _facilitiesService.GetFacilityByIdAsync(id);
 
-			return Ok(facility);
+			return Ok(new ResponseWrapper<FacilityDto>
+			{
+				Data = facility,
+				Message = "Facility retrieved successfully",
+				Success = true
+			});
 		}
 
 		// POST api/<FacilitiesController>
@@ -49,7 +59,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var newFacility = await _facilitiesService.CreateAsync(createFacilityDto);
 
-			return CreatedAtAction(nameof(GetFacilityById), new { id = newFacility.Id }, newFacility);
+			return CreatedAtAction(nameof(GetFacilityById), new { id = newFacility.Id }, new ResponseWrapper<FacilityDto>
+			{
+				Data = newFacility,
+				Message = "Facility created successfully",
+				Success = true
+			});
 		}
 
 		// PUT api/<FacilitiesController>/5
@@ -61,7 +76,12 @@ namespace ReservationsSystem.API.Controllers
 		{
 			var updatedFacility = await _facilitiesService.UpdateFacilityAsync(facilityDto);
 
-			return Ok(updatedFacility);
+			return Ok(new ResponseWrapper<FacilityDto>
+			{
+				Data = updatedFacility,
+				Message = "Facility updated successfully",
+				Success = true
+			});
 		}
 
 		// DELETE api/<FacilitiesController>/5
