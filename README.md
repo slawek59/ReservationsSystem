@@ -70,8 +70,8 @@ The application uses several commonly adopted software design patterns:
 Following technologies were used:
 
 - C# - main programming language
-- ASP.NET Core Web API 8 - web framework
-- SQL Server LocalDB - database
+- ASP.NET Core Web API (.NET 8) - web framework
+- Microsoft SQL Server LocalDB - database
 - Entity Framework Core - Object Relational Mapper (ORM) for handling database requests
 - LINQ - provides a concise and readable way to query and manipulate collections and database data
 - Swagger / OpenAPI - tool for API documentation and initial endpoint testing
