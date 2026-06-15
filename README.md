@@ -40,9 +40,10 @@ The system allows users to create and manage reservations, manage sports facilit
 
 #### The application enforces the following rules:
 
-- A facility cannot be reserved for overlapping time periods
 - A user cannot have more than five reservations
+- Reservation cannot be created for overlapping time periods
 - Reservations can only be created by active users and active facilities
+- Reservation can not be created with start date taking place later in future than end date
 - Facility name and location combination must be unique
 
 ## Structure

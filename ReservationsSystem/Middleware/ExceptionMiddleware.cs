@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using ReservationsSystem.Application.Exceptions;
+using System.Net;
 using System.Text.Json;
 
 namespace ReservationsSystem.API.Middleware
@@ -18,23 +19,30 @@ namespace ReservationsSystem.API.Middleware
 			{
 				await _next(context);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				await HandleExceptionAsync(context);
+				await HandleExceptionAsync(context, ex);
 			}
 		}
 
-		private async Task HandleExceptionAsync(HttpContext context)
+		private async Task HandleExceptionAsync(HttpContext context, Exception ex)
 		{
-			var statusCode = (int)HttpStatusCode.InternalServerError;
-				
+
+			var statusCode = ex switch
+			{
+				NotFoundException => HttpStatusCode.NotFound,
+				BadRequestException => HttpStatusCode.BadRequest,
+				ValidationException => HttpStatusCode.BadRequest,
+				_ => HttpStatusCode.InternalServerError
+			};
+
 			var jsonResponse = JsonSerializer.Serialize(new
 			{
 				Status = statusCode,
-				Message = "An unexpected error occurred.",
+				Message = ex.Message,
 			});
 			context.Response.ContentType = "application/json";
-			context.Response.StatusCode = statusCode;
+			context.Response.StatusCode = (int	)statusCode;
 
 			await context.Response.WriteAsync(jsonResponse);
 		}

@@ -1,4 +1,5 @@
 ﻿using ReservationsSystem.Application.DTOs;
+using ReservationsSystem.Application.Exceptions;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Domain.Entities;
@@ -115,7 +116,7 @@ namespace ReservationsSystem.Application.Services
 			if (user == null)
 			{
 				//_logger.LogWarning("No user found with ID: {UserId}", id);
-				//throw new NotFoundException($"No user found with ID: {id}");
+				throw new NotFoundException($"No user found with ID: {id}");
 			}
 			return user;
 		}

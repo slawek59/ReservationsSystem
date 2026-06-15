@@ -1,4 +1,5 @@
 ﻿using ReservationsSystem.Application.DTOs;
+using ReservationsSystem.Application.Exceptions;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Domain.Entities;
@@ -25,41 +26,21 @@ namespace ReservationsSystem.Application.Services
 
 			var user = await _userRepository.GetByIdAsync(createReservationDto.UserId);
 
-			if (user == null)
-			{
-				//_logger.LogWarning("No user found with ID: {UserId}", id);
-				//throw new NotFoundException($"No user found with ID: {id}");
-			}
+			VerifyIfUserExists(createReservationDto, user);
 
 			var facility = await _facilityRepository.GetByIdAsync(createReservationDto.FacilityId);
 
-			if (facility == null)
-			{
-				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
-				//throw new NotFoundException($"No facility found with ID: {id}");
-			}
+			VerifyIfFacilityExists(createReservationDto, facility);
 
 			var userReservationsCount = await _reservationRepository.GetReservationsCountForUserAsync(createReservationDto.UserId);
 
-			if (userReservationsCount > MaxReservationsPerUser)
-			{
-				//_logger.LogWarning("User with ID: {UserId} has reached the maximum number of reservations.", createReservationDto.UserId);
-				//throw new ValidationException($"User has reached the maximum number of reservations.");
-			}
+			VerifyIfUsersHasFreeReservations(userReservationsCount);
 
-			if (!user.IsActive || !facility.IsActive)
-			{
-				//_logger.LogWarning("User or facility is inactive. User ID: {UserId}, Facility ID: {FacilityId}", createReservationDto.UserId, createReservationDto.FacilityId);
-				//throw new ValidationException("User or facility is inactive.");
-			}
+			VerifyIfUserAndLocationAreActive(user, facility);
 
-			var areReservationsOverlapping = await _reservationRepository.HasOverlappingReservationAsync(createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
+			await VerifyIfReservationsAreOverlapping(createReservationDto);
 
-			if (areReservationsOverlapping)
-			{
-				//_logger.LogWarning("Overlapping reservation found for facility ID: {FacilityId} between {StartTime} and {EndTime}", createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
-				//throw new ValidationException($"The facility is already reserved for the specified time range.");
-			}
+			VerifyStartAndEndDates(createReservationDto);
 
 			var newReservation = new Reservation
 			{
@@ -167,9 +148,65 @@ namespace ReservationsSystem.Application.Services
 			if (reservation == null)
 			{
 				//_logger.LogWarning("No reservation found with ID: {ReservationId}", id);
-				//throw new NotFoundException($"No reservation found with ID: {id}");
+				throw new NotFoundException($"No reservation found with ID: {id}");
 			}
 			return reservation;
+		}
+
+		private static void VerifyStartAndEndDates(CreateReservationDto createReservationDto)
+		{
+			if (createReservationDto.StartTime >= createReservationDto.EndTime)
+			{
+				//_logger.LogWarning("Invalid reservation time range. Start time must be before end time. StartTime: {StartTime}, EndTime: {EndTime}", createReservationDto.StartTime, createReservationDto.EndTime);
+				throw new ValidationException("Start time must be before end time.");
+			}
+		}
+
+		private async Task VerifyIfReservationsAreOverlapping(CreateReservationDto createReservationDto)
+		{
+			var areReservationsOverlapping = await _reservationRepository.HasOverlappingReservationAsync(createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
+
+			if (areReservationsOverlapping)
+			{
+				//_logger.LogWarning("Overlapping reservation found for facility ID: {FacilityId} between {StartTime} and {EndTime}", createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
+				throw new ValidationException($"The facility is already reserved for the specified time range.");
+			}
+		}
+
+		private static void VerifyIfUserAndLocationAreActive(User? user, Facility? facility)
+		{
+			if (!user.IsActive || !facility.IsActive)
+			{
+				//_logger.LogWarning("User or facility is inactive. User ID: {UserId}, Facility ID: {FacilityId}", createReservationDto.UserId, createReservationDto.FacilityId);
+				throw new ValidationException("User or facility is inactive.");
+			}
+		}
+
+		private static void VerifyIfUsersHasFreeReservations(int userReservationsCount)
+		{
+			if (userReservationsCount > MaxReservationsPerUser)
+			{
+				//_logger.LogWarning("User with ID: {UserId} has reached the maximum number of reservations.", createReservationDto.UserId);
+				throw new ValidationException($"User has reached the maximum number of reservations.");
+			}
+		}
+
+		private static void VerifyIfFacilityExists(CreateReservationDto createReservationDto, Facility? facility)
+		{
+			if (facility == null)
+			{
+				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
+				throw new NotFoundException($"No facility found with ID: {createReservationDto.FacilityId}");
+			}
+		}
+
+		private static void VerifyIfUserExists(CreateReservationDto createReservationDto, User? user)
+		{
+			if (user == null)
+			{
+				//_logger.LogWarning("No user found with ID: {UserId}", id);
+				throw new NotFoundException($"No user found with ID: {createReservationDto.UserId}");
+			}
 		}
 	}
 }

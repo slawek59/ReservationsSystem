@@ -1,4 +1,5 @@
 ﻿using ReservationsSystem.Application.DTOs;
+using ReservationsSystem.Application.Exceptions;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Domain.Entities;
@@ -23,7 +24,7 @@ namespace ReservationsSystem.Application.Services
 			if (doesFacilityAlreadyExist)
 			{
 				//_logger.LogWarning();
-				//throw
+				throw new BadRequestException($"Facility with {createFacilityDto.Name} and {createFacilityDto.Location} already exists.");
 			}
 
 			var newFacility = new Facility
@@ -134,7 +135,7 @@ namespace ReservationsSystem.Application.Services
 			if (facility == null)
 			{
 				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
-				//throw new NotFoundException($"No facility found with ID: {id}");
+				throw new NotFoundException($"No facility found with ID: {id}");
 			}
 			return facility;
 		}
