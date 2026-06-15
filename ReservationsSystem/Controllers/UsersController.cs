@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using ReservationsSystem.Application.DTOs;
 using ReservationsSystem.Application.Interfaces.Services;
 
@@ -27,11 +28,12 @@ namespace ReservationsSystem.API.Controllers
 		/// Retrieves all users.
 		/// </summary>
 		/// <returns>Collection of users.</returns>
+		[HttpGet]
+		[OutputCache(PolicyName = "Expire60")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		// GET: api/<UsersController>
-		[HttpGet]
 		public async Task<ActionResult<ResponseWrapper<IEnumerable<UserDto>>>> GetAllUsers()
 		{
 			var users = await _usersService.GetAllUsersAsync();
@@ -51,6 +53,7 @@ namespace ReservationsSystem.API.Controllers
 		/// <returns>The requested user.</returns>
 		// GET api/<UsersController>/5
 		[HttpGet("{id}")]
+		[OutputCache(PolicyName = "Expire60")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

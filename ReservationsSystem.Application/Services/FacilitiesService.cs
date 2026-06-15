@@ -41,6 +41,8 @@ namespace ReservationsSystem.Application.Services
 
 			await _facilityRepository.AddAsync(newFacility);
 
+			await _facilityRepository.SaveChangesAsync();
+
 			//_logger.LogInformation("Facility created successfully. Facility ID: {FacilityId}", newFacility.Id);
 
 			return new FacilityDto

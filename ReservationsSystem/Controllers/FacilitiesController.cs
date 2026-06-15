@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using ReservationsSystem.Application.DTOs;
 using ReservationsSystem.Application.Interfaces.Services;
 
@@ -28,6 +29,7 @@ namespace ReservationsSystem.API.Controllers
 		/// <returns>Collection of facilities.</returns>
 		// GET: api/<FacilitiesController>
 		[HttpGet]
+		[OutputCache(PolicyName = "Expire60")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -50,6 +52,7 @@ namespace ReservationsSystem.API.Controllers
 		/// <returns>The requested facility.</returns>
 		// GET api/<FacilitiesController>/5
 		[HttpGet("{id}")]
+		[OutputCache(PolicyName = "Expire60")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

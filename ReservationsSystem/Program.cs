@@ -61,6 +61,13 @@ namespace ReservationsSystem
 			builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 			builder.Services.AddScoped<IFileService, FileService>();
 			builder.Services.AddScoped<ICsvGenerator, CsvGenerator>();
+			builder.Services.AddOutputCache(options =>
+			{
+				options.AddPolicy("Expire60", builder =>
+					builder
+						.Expire(TimeSpan.FromSeconds(60))
+						.SetVaryByRouteValue("id"));
+			});
 
 			var app = builder.Build();
 
@@ -73,10 +80,11 @@ namespace ReservationsSystem
 
 			app.UseExceptionMiddleware();
 
+			app.UseOutputCache();
+
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
-
 
 			app.MapControllers();
 

@@ -32,6 +32,8 @@ namespace ReservationsSystem.Application.Services
 
 			await _userRepository.AddAsync(newUser);
 
+			await _userRepository.SaveChangesAsync();
+
 			//_logger.LogInformation("User created successfully. User ID: {UserId}", newUser.Id);
 
 			return new UserDto
