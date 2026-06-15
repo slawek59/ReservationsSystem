@@ -1,4 +1,5 @@
-﻿using ReservationsSystem.Application.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using ReservationsSystem.Application.DTOs;
 using ReservationsSystem.Application.Exceptions;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
@@ -12,17 +13,20 @@ namespace ReservationsSystem.Application.Services
 		private readonly IReservationRepository _reservationRepository;
 		private readonly IUserRepository _userRepository;
 		private readonly IFacilityRepository _facilityRepository;
+		private readonly ILogger<ReservationsService> _logger;
 
-		public ReservationsService(IReservationRepository reservationRepository, IUserRepository userRepository, IFacilityRepository facilityRepository)
+
+		public ReservationsService(IReservationRepository reservationRepository, IUserRepository userRepository, IFacilityRepository facilityRepository, ILogger<ReservationsService> logger)
 		{
 			_reservationRepository = reservationRepository;
 			_userRepository = userRepository;
 			_facilityRepository = facilityRepository;
+			_logger = logger;
 		}
 
 		public async Task<ReservationDto> CreateAsync(CreateReservationDto createReservationDto)
 		{
-			//_logger.LogInformation("Creating new reservation.);
+			_logger.LogInformation("Creating new reservation.");
 
 			var user = await _userRepository.GetByIdAsync(createReservationDto.UserId);
 
@@ -59,7 +63,7 @@ namespace ReservationsSystem.Application.Services
 
 			await _reservationRepository.SaveChangesAsync();
 
-			//_logger.LogInformation("Reservation created successfully. User ID: {UserId}", newReservation.UserId);
+			_logger.LogInformation("Reservation created successfully. User ID: {UserId}", newReservation.UserId);
 
 			return new ReservationDto
 			{
@@ -74,7 +78,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task DeleteReservationAsync(Guid id)
 		{
-			//_logger.LogInformation("Deleting reservation with ID: {ReservationId}", id);
+			_logger.LogInformation("Deleting reservation with ID: {ReservationId}", id);
 
 			var reservationToDelete = await GetExistingReservation(id);
 
@@ -85,7 +89,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<IEnumerable<ReservationDto>> GetAllReservationsAsync()
 		{
-			//_logger.LogInformation("Retrieving all reservations.");
+			_logger.LogInformation("Retrieving all reservations.");
 
 			var reservations = await _reservationRepository.GetAllAsync();
 
@@ -102,7 +106,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<ReservationDto> GetReservationByIdAsync(Guid id)
 		{
-			//_logger.LogInformation("Retrieving reservation with ID: {ReservationId}", id);
+			_logger.LogInformation("Retrieving reservation with ID: {ReservationId}", id);
 
 			var reservation = await GetExistingReservation(id);
 
@@ -119,13 +123,13 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<ReservationDto> UpdateReservationAsync(ReservationDto reservationDto)
 		{
-			//_logger.LogInformation("Updating reservation with ID: {ReservationId}", reservationDto.Id);
+			_logger.LogInformation("Updating reservation with ID: {ReservationId}", reservationDto.Id);
 
 			var reservationToUpdate = await GetExistingReservation(reservationDto.Id);
 
 			reservationToUpdate.Status = reservationDto.Status;
 
-			//_logger.LogInformation("Saving updated reservation.");
+			_logger.LogInformation("Saving updated reservation with ID: {ReservationId}", reservationDto.Id);
 			await _reservationRepository.SaveChangesAsync();
 
 			return new ReservationDto
@@ -141,23 +145,21 @@ namespace ReservationsSystem.Application.Services
 
 		private async Task<Reservation> GetExistingReservation(Guid id)
 		{
-			//_logger.LogInformation("Retrieving existing reservation with ID: {ReservationId}", id);
-
 			var reservation = await _reservationRepository.GetByIdAsync(id);
 
 			if (reservation == null)
 			{
-				//_logger.LogWarning("No reservation found with ID: {ReservationId}", id);
+				_logger.LogWarning("No reservation found with ID: {ReservationId}", id);
 				throw new NotFoundException($"No reservation found with ID: {id}");
 			}
 			return reservation;
 		}
 
-		private static void VerifyStartAndEndDates(CreateReservationDto createReservationDto)
+		private void VerifyStartAndEndDates(CreateReservationDto createReservationDto)
 		{
 			if (createReservationDto.StartTime >= createReservationDto.EndTime)
 			{
-				//_logger.LogWarning("Invalid reservation time range. Start time must be before end time. StartTime: {StartTime}, EndTime: {EndTime}", createReservationDto.StartTime, createReservationDto.EndTime);
+				_logger.LogWarning("Invalid reservation time range. Start time must be before end time. StartTime: {StartTime}, EndTime: {EndTime}", createReservationDto.StartTime, createReservationDto.EndTime);
 				throw new ValidationException("Start time must be before end time.");
 			}
 		}
@@ -168,43 +170,43 @@ namespace ReservationsSystem.Application.Services
 
 			if (areReservationsOverlapping)
 			{
-				//_logger.LogWarning("Overlapping reservation found for facility ID: {FacilityId} between {StartTime} and {EndTime}", createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
+				_logger.LogWarning("Overlapping reservation found for facility ID: {FacilityId} between {StartTime} and {EndTime}", createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
 				throw new ValidationException($"The facility is already reserved for the specified time range.");
 			}
 		}
 
-		private static void VerifyIfUserAndLocationAreActive(User? user, Facility? facility)
+		private void VerifyIfUserAndLocationAreActive(User? user, Facility? facility)
 		{
 			if (!user.IsActive || !facility.IsActive)
 			{
-				//_logger.LogWarning("User or facility is inactive. User ID: {UserId}, Facility ID: {FacilityId}", createReservationDto.UserId, createReservationDto.FacilityId);
+				_logger.LogWarning("User or facility is inactive. User ID: {UserId}, Facility ID: {FacilityId}", user?.Id, facility?.Id);
 				throw new ValidationException("User or facility is inactive.");
 			}
 		}
 
-		private static void VerifyIfUsersHasFreeReservations(int userReservationsCount)
+		private void VerifyIfUsersHasFreeReservations(int userReservationsCount)
 		{
 			if (userReservationsCount > MaxReservationsPerUser)
 			{
-				//_logger.LogWarning("User with ID: {UserId} has reached the maximum number of reservations.", createReservationDto.UserId);
+				_logger.LogWarning("User has reached the maximum number of reservations.");
 				throw new ValidationException($"User has reached the maximum number of reservations.");
 			}
 		}
 
-		private static void VerifyIfFacilityExists(CreateReservationDto createReservationDto, Facility? facility)
+		private void VerifyIfFacilityExists(CreateReservationDto createReservationDto, Facility? facility)
 		{
 			if (facility == null)
 			{
-				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
+				_logger.LogWarning("No facility found with ID: {FacilityId}", createReservationDto.FacilityId);
 				throw new NotFoundException($"No facility found with ID: {createReservationDto.FacilityId}");
 			}
 		}
 
-		private static void VerifyIfUserExists(CreateReservationDto createReservationDto, User? user)
+		private void VerifyIfUserExists(CreateReservationDto createReservationDto, User? user)
 		{
 			if (user == null)
 			{
-				//_logger.LogWarning("No user found with ID: {UserId}", id);
+				_logger.LogWarning("No user found with ID: {UserId}", createReservationDto.UserId);
 				throw new NotFoundException($"No user found with ID: {createReservationDto.UserId}");
 			}
 		}

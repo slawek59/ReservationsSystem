@@ -3,27 +3,30 @@ using ReservationsSystem.Application.Exceptions;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
 using ReservationsSystem.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ReservationsSystem.Application.Services
 {
 	public class FacilitiesService : IFacilitiesService
 	{
 		private readonly IFacilityRepository _facilityRepository;
+		private readonly ILogger<FacilitiesService> _logger;
 
-		public FacilitiesService(IFacilityRepository facilityRepository)
+		public FacilitiesService(IFacilityRepository facilityRepository, ILogger<FacilitiesService> logger)
 		{
 			_facilityRepository = facilityRepository;
+			_logger = logger;
 		}
 
 		public async Task<FacilityDto> CreateAsync(CreateFacilityDto createFacilityDto)
 		{
-			//_logger.LogInformation("Creating new facility with name: {FacilityName}", createFacilityDto.Name);
+			_logger.LogInformation("Creating new facility with name: {FacilityName}", createFacilityDto.Name);
 
 			var doesFacilityAlreadyExist = await _facilityRepository.ExistsByNameAndLocationAsync(createFacilityDto.Name, createFacilityDto.Location);
 
 			if (doesFacilityAlreadyExist)
 			{
-				//_logger.LogWarning();
+				_logger.LogWarning("Facility with name: {FacilityName} and location: {FacilityLocation} already exists.", createFacilityDto.Name, createFacilityDto.Location);
 				throw new BadRequestException($"Facility with {createFacilityDto.Name} and {createFacilityDto.Location} already exists.");
 			}
 
@@ -43,7 +46,7 @@ namespace ReservationsSystem.Application.Services
 
 			await _facilityRepository.SaveChangesAsync();
 
-			//_logger.LogInformation("Facility created successfully. Facility ID: {FacilityId}", newFacility.Id);
+			_logger.LogInformation("Facility created successfully. Facility ID: {FacilityId}", newFacility.Id);
 
 			return new FacilityDto
 			{
@@ -58,7 +61,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task DeleteFacilityAsync(Guid id)
 		{
-			//_logger.LogInformation("Deleting facility with ID: {FacilityId}", id);
+			_logger.LogInformation("Deleting facility with ID: {FacilityId}", id);
 
 			var facilityToDelete = await GetExistingFacility(id);
 
@@ -68,7 +71,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<List<FacilityDto>> GetAllFacilitiesAsync()
 		{
-			//_logger.LogInformation("Retrieving all facilities.");
+			_logger.LogInformation("Retrieving all facilities.");
 
 			var facilities = await _facilityRepository.GetAllAsync();
 
@@ -87,7 +90,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<FacilityDto> GetFacilityByIdAsync(Guid id)
 		{
-			//_logger.LogInformation("Retrieving facility with ID: {FacilityId}", id);
+			_logger.LogInformation("Retrieving facility with ID: {FacilityId}", id);
 
 			var facility = await GetExistingFacility(id);
 
@@ -105,7 +108,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<FacilityDto> UpdateFacilityAsync(FacilityDto facilityDto)
 		{
-			//_logger.LogInformation("Updating user with ID: {UserId}", userDto.Id);
+			_logger.LogInformation("Updating facility with ID: {FacilityId}", facilityDto.Id);
 
 			var facilityToUpdate = await GetExistingFacility(facilityDto.Id);
 
@@ -113,7 +116,7 @@ namespace ReservationsSystem.Application.Services
 			facilityToUpdate.Type = facilityDto.Type;
 			facilityToUpdate.Capacity = facilityDto.Capacity;
 
-			//_logger.LogInformation("Saving updated facility.");
+			_logger.LogInformation("Saving updated facility with ID: {FacilityId}", facilityDto.Id);
 			await _facilityRepository.SaveChangesAsync();
 
 			return new FacilityDto
@@ -130,13 +133,11 @@ namespace ReservationsSystem.Application.Services
 
 		private async Task<Facility> GetExistingFacility(Guid id)
 		{
-			//_logger.LogInformation("Retrieving existing facility with ID: {FacilityId}", id);
-
 			var facility = await _facilityRepository.GetByIdAsync(id);
 
 			if (facility == null)
 			{
-				//_logger.LogWarning("No facility found with ID: {FacilityId}", id);
+				_logger.LogWarning("No facility found with ID: {FacilityId}", id);
 				throw new NotFoundException($"No facility found with ID: {id}");
 			}
 			return facility;

@@ -11,6 +11,7 @@ using ReservationsSystem.Application.Validators.User;
 using ReservationsSystem.Infra.Files;
 using ReservationsSystem.Infra.Persistence;
 using ReservationsSystem.Infra.Repositories;
+using Serilog;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -23,6 +24,12 @@ namespace ReservationsSystem
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
+
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(builder.Configuration)
+				.CreateLogger();
+
+			builder.Host.UseSerilog();
 
 			builder.Services
 				.AddControllers()

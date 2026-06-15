@@ -35,6 +35,8 @@ The system allows users to create and manage reservations, manage sports facilit
 - Standardized API responses using Response Wrapper
 - Swagger/OpenAPI documentation
 - Data persistence using Entity Framework Core and SQL Server
+- Caching for 60 seconds
+- Logging to console and to separate files for info/warning and error
 
 ## Business Rules
 
@@ -77,6 +79,7 @@ Following technologies were used:
 - LINQ - provides a concise and readable way to query and manipulate collections and database data
 - Swagger / OpenAPI - tool for API documentation and initial endpoint testing
 - FluentValidation - library for verification of incoming requests data
+- Serilog - library for logging
 
 ## Requirements
 

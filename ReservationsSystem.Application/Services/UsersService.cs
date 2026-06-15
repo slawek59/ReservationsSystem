@@ -1,4 +1,5 @@
-﻿using ReservationsSystem.Application.DTOs;
+﻿using Microsoft.Extensions.Logging;
+using ReservationsSystem.Application.DTOs;
 using ReservationsSystem.Application.Exceptions;
 using ReservationsSystem.Application.Interfaces.Repositories;
 using ReservationsSystem.Application.Interfaces.Services;
@@ -9,15 +10,17 @@ namespace ReservationsSystem.Application.Services
 	public class UsersService : IUsersService
 	{
 		private readonly IUserRepository _userRepository;
+		private readonly ILogger<UsersService> _logger;
 
-		public UsersService(IUserRepository userRepository)
+		public UsersService(IUserRepository userRepository, ILogger<UsersService> logger)
 		{
 			_userRepository = userRepository;
+			_logger = logger;
 		}
 
 		public async Task<UserDto> CreateAsync(CreateUserDto createUserDto)
 		{
-			//_logger.LogInformation("Creating new user with name: {UserName}", createUserDto.FirstName);
+			_logger.LogInformation("Creating new user with name: {UserName}", createUserDto.FirstName);
 
 			var newUser = new User
 			{
@@ -34,7 +37,7 @@ namespace ReservationsSystem.Application.Services
 
 			await _userRepository.SaveChangesAsync();
 
-			//_logger.LogInformation("User created successfully. User ID: {UserId}", newUser.Id);
+			_logger.LogInformation("User created successfully. User ID: {UserId}", newUser.Id);
 
 			return new UserDto
 			{
@@ -46,7 +49,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task DeleteUserAsync(Guid id)
 		{
-			//_logger.LogInformation("Deleting user with ID: {UserId}", id);
+			_logger.LogInformation("Deleting user with ID: {UserId}", id);
 
 			var userToDelete = await GetExistingUser(id);
 
@@ -56,7 +59,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
 		{
-			//_logger.LogInformation("Retrieving all users.");
+			_logger.LogInformation("Retrieving all users.");
 
 			var allUsers = await _userRepository.GetAllAsync();
 
@@ -73,7 +76,7 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<UserDto> GetUserByIdAsync(Guid id)
 		{
-			//_logger.LogInformation("Retrieving user with ID: {UserId}", id);
+			_logger.LogInformation("Retrieving user with ID: {UserId}", id);
 
 			var userEntity = await GetExistingUser(id);
 
@@ -89,14 +92,14 @@ namespace ReservationsSystem.Application.Services
 
 		public async Task<UserDto> UpdateUserAsync(UserDto userDto)
 		{
-			//_logger.LogInformation("Updating user with ID: {UserId}", userDto.Id);
+			_logger.LogInformation("Updating user with ID: {UserId}", userDto.Id);
 
 			var userToUpdate = await GetExistingUser(userDto.Id);
 
 			userToUpdate.Email = userDto.Email;
 			userToUpdate.Phone = userDto.Phone;
 
-			//_logger.LogInformation("Saving updated user.");
+			_logger.LogInformation("Saving updated user with ID: {UserId}", userDto.Id);
 			await _userRepository.SaveChangesAsync();
 
 			return new UserDto
@@ -111,13 +114,11 @@ namespace ReservationsSystem.Application.Services
 
 		private async Task<User> GetExistingUser(Guid id)
 		{
-			//_logger.LogInformation("Retrieving existing user with ID: {UserId}", id);
-
 			var user = await _userRepository.GetByIdAsync(id);
 			
 			if (user == null)
 			{
-				//_logger.LogWarning("No user found with ID: {UserId}", id);
+				_logger.LogWarning("No user found with ID: {UserId}", id);
 				throw new NotFoundException($"No user found with ID: {id}");
 			}
 			return user;
