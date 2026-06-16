@@ -160,7 +160,7 @@ namespace ReservationsSystem.Application.Services
 			if (createReservationDto.StartTime >= createReservationDto.EndTime)
 			{
 				_logger.LogWarning("Invalid reservation time range. Start time must be before end time. StartTime: {StartTime}, EndTime: {EndTime}", createReservationDto.StartTime, createReservationDto.EndTime);
-				throw new ValidationException("Start time must be before end time.");
+				throw new BadRequestException("Start time must be before end time.");
 			}
 		}
 
@@ -171,7 +171,7 @@ namespace ReservationsSystem.Application.Services
 			if (areReservationsOverlapping)
 			{
 				_logger.LogWarning("Overlapping reservation found for facility ID: {FacilityId} between {StartTime} and {EndTime}", createReservationDto.FacilityId, createReservationDto.StartTime, createReservationDto.EndTime);
-				throw new ValidationException($"The facility is already reserved for the specified time range.");
+				throw new BadRequestException($"The facility is already reserved for the specified time range.");
 			}
 		}
 
@@ -180,7 +180,7 @@ namespace ReservationsSystem.Application.Services
 			if (!user.IsActive || !facility.IsActive)
 			{
 				_logger.LogWarning("User or facility is inactive. User ID: {UserId}, Facility ID: {FacilityId}", user?.Id, facility?.Id);
-				throw new ValidationException("User or facility is inactive.");
+				throw new BadRequestException("User or facility is inactive.");
 			}
 		}
 
@@ -189,7 +189,7 @@ namespace ReservationsSystem.Application.Services
 			if (userReservationsCount > MaxReservationsPerUser)
 			{
 				_logger.LogWarning("User has reached the maximum number of reservations.");
-				throw new ValidationException($"User has reached the maximum number of reservations.");
+				throw new BadRequestException($"User has reached the maximum number of reservations.");
 			}
 		}
 

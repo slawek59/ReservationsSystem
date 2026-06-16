@@ -32,7 +32,6 @@ namespace ReservationsSystem.API.Middleware
 			{
 				NotFoundException => HttpStatusCode.NotFound,
 				BadRequestException => HttpStatusCode.BadRequest,
-				ValidationException => HttpStatusCode.BadRequest,
 				_ => HttpStatusCode.InternalServerError
 			};
 
